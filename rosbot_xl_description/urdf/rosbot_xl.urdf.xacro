@@ -8,14 +8,16 @@
   <xacro:arg name="use_sim" default="false" />
   <xacro:arg name="simulation_engine" default="ignition-gazebo" />
   <xacro:arg name="namespace" default="None" />
+  <xacro:arg name="controller_config_file" default="$(find rosbot_xl_controller)/config/diff_drive_controller.yaml" />
 
   <xacro:include filename="$(find rosbot_xl_description)/urdf/rosbot_xl_macro.urdf.xacro"
     ns="husarion" />
   <xacro:husarion.rosbot_xl_robot
-    use_sim="$(arg use_sim)"
+    controller_config_file="$(arg controller_config_file)"
     mecanum="$(arg mecanum)"
+    namespace="$(arg namespace)"
     simulation_engine="$(arg simulation_engine)"
-    namespace="$(arg namespace)" />
+    use_sim="$(arg use_sim)" />
 
   <xacro:include filename="$(find rosbot_xl_description)/urdf/components/antenna.urdf.xacro"
     ns="antenna" />
@@ -31,9 +33,6 @@
   <xacro:property name="lidar_parent_link" value="cover_link" />
   <xacro:property name="lidar_xyz" value="0.12 0.0 0.0" />
   <xacro:property name="lidar_rpy" value="0.0 0.0 1.5708" />
-  <xacro:property name="lidar_use_gpu" value="true" />
-  <!-- use_gpu has to be set to true, CPU lidar doesn't work in ignition -
-    https://github.com/gazebosim/gz-sensors/issues/26 -->
 
   <xacro:if value="${lidar_model == 'slamtec_rplidar_s1'}">
     <xacro:include filename="$(find ros_components_description)/urdf/slamtec_rplidar_s1.urdf.xacro"
@@ -41,10 +40,7 @@
     <xacro:lidar.slamtec_rplidar_s1
       parent_link="${lidar_parent_link}"
       xyz="${lidar_xyz}"
-      rpy="${lidar_rpy}"
-      use_gpu="${lidar_use_gpu}"
-      simulation_engine="$(arg simulation_engine)"
-      namespace="$(arg namespace)" />
+      rpy="${lidar_rpy}" />
   </xacro:if>
 
   <xacro:if value="${lidar_model == 'slamtec_rplidar_s2'}">
@@ -53,10 +49,7 @@
     <xacro:lidar.slamtec_rplidar_s2
       parent_link="${lidar_parent_link}"
       xyz="${lidar_xyz}"
-      rpy="${lidar_rpy}"
-      use_gpu="${lidar_use_gpu}"
-      simulation_engine="$(arg simulation_engine)"
-      namespace="$(arg namespace)" />
+      rpy="${lidar_rpy}" />
   </xacro:if>
 
   <xacro:if value="${lidar_model == 'slamtec_rplidar_s3'}">
@@ -65,10 +58,7 @@
     <xacro:lidar.slamtec_rplidar_s3
       parent_link="${lidar_parent_link}"
       xyz="${lidar_xyz}"
-      rpy="${lidar_rpy}"
-      use_gpu="${lidar_use_gpu}"
-      simulation_engine="$(arg simulation_engine)"
-      namespace="$(arg namespace)" />
+      rpy="${lidar_rpy}" />
   </xacro:if>
 
   <xacro:if value="${lidar_model == 'slamtec_rplidar_a2'}">
@@ -77,10 +67,7 @@
     <xacro:lidar.slamtec_rplidar_a2
       parent_link="${lidar_parent_link}"
       xyz="${lidar_xyz}"
-      rpy="${lidar_rpy}"
-      use_gpu="${lidar_use_gpu}"
-      simulation_engine="$(arg simulation_engine)"
-      namespace="$(arg namespace)" />
+      rpy="${lidar_rpy}" />
   </xacro:if>
 
   <xacro:if value="${lidar_model == 'slamtec_rplidar_a3'}">
@@ -89,10 +76,7 @@
     <xacro:lidar.slamtec_rplidar_a3
       parent_link="${lidar_parent_link}"
       xyz="${lidar_xyz}"
-      rpy="${lidar_rpy}"
-      use_gpu="${lidar_use_gpu}"
-      simulation_engine="$(arg simulation_engine)"
-      namespace="$(arg namespace)" />
+      rpy="${lidar_rpy}" />
   </xacro:if>
 
   <xacro:if value="${lidar_model == 'velodyne_puck'}">
@@ -101,11 +85,7 @@
     <xacro:lidar.velodyne_puck
       parent_link="${lidar_parent_link}"
       xyz="${lidar_xyz}"
-      rpy="${lidar_rpy}"
-      use_gpu="${lidar_use_gpu}"
-      simulation_engine="$(arg simulation_engine)"
-      topic="velodyne_points"
-      namespace="$(arg namespace)" />
+      rpy="${lidar_rpy}" />
   </xacro:if>
 
   <!-- INCLUDE CAMERA -->
@@ -125,9 +105,7 @@
       parent_link="${camera_parent_link}"
       xyz="${camera_xyz}"
       rpy="${camera_rpy}"
-      use_nominal_extrinsics="$(arg use_sim)"
-      simulation_engine="$(arg simulation_engine)"
-      namespace="$(arg namespace)" />
+      use_nominal_extrinsics="$(arg use_sim)" />
   </xacro:if>
 
   <xacro:if value="${camera_model == 'orbbec_astra'}">
@@ -137,9 +115,7 @@
     <xacro:camera.orbbec_astra
       parent_link="${camera_parent_link}"
       xyz="${camera_xyz}"
-      rpy="${camera_rpy}"
-      simulation_engine="$(arg simulation_engine)"
-      namespace="$(arg namespace)" />
+      rpy="${camera_rpy}" />
   </xacro:if>
 
   <xacro:if value="${camera_model.startswith('stereolabs')}">
@@ -169,9 +145,7 @@
       parent_link="${camera_parent_link}"
       xyz="${camera_xyz}"
       rpy="${camera_rpy}"
-      model="${camera_model_type}"
-      simulation_engine="$(arg simulation_engine)"
-      namespace="$(arg namespace)" />
+      model="${camera_model_type}" />
   </xacro:if>
 
   <!-- INCLUDE CAMERA MOUNT - add if camera_model is not empty -->

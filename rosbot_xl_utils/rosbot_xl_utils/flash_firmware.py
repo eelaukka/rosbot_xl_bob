@@ -14,14 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import subprocess
-import os
-import sys
 import argparse
-import signal
 import glob
-import requests
+import os
+import signal
+import subprocess
+import sys
+
 import ament_index_python.packages
+import requests
 
 # Global variable to hold the subprocess reference
 subproc = None
@@ -79,8 +80,8 @@ def main(args=None):
     parser.add_argument(
         "-p",
         "--port",
-        default="/dev/ttyUSB0",
-        help="Specify the USB port (default: /dev/ttyUSB0)",
+        default="/dev/ttyUSBDB",
+        help="Specify the USB port (default: /dev/ttyUSBDB)",
     )
     parser.add_argument("--file", help="Specify the firmware file")
 

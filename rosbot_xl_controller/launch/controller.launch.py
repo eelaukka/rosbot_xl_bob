@@ -15,22 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from launch.event_handlers import OnProcessExit
 from launch import LaunchDescription
-from launch.actions import (
-    DeclareLaunchArgument,
-    RegisterEventHandler,
-    OpaqueFunction,
-)
+from launch.actions import DeclareLaunchArgument, OpaqueFunction, RegisterEventHandler
 from launch.conditions import UnlessCondition
+from launch.event_handlers import OnProcessExit
 from launch.substitutions import (
     Command,
-    PythonExpression,
     FindExecutable,
-    PathJoinSubstitution,
     LaunchConfiguration,
+    PathJoinSubstitution,
+    PythonExpression,
 )
-
 from launch_ros.actions import Node, SetParameter
 from launch_ros.substitutions import FindPackageShare
 
@@ -122,9 +117,7 @@ def generate_launch_description():
     declare_mecanum_arg = DeclareLaunchArgument(
         "mecanum",
         default_value="False",
-        description=(
-            "Whether to use mecanum drive controller (otherwise diff drive controller is used)",
-        ),
+        description="Whether to use mecanum drive controller, otherwise use diff drive",
     )
 
     camera_model = LaunchConfiguration("camera_model")
@@ -190,6 +183,14 @@ def generate_launch_description():
         ]
     )
 
+    controller_config_path = PathJoinSubstitution(
+        [
+            FindPackageShare("rosbot_xl_controller"),
+            "config",
+            controller_config_name,
+        ]
+    )
+
     robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -201,6 +202,8 @@ def generate_launch_description():
                     "rosbot_xl.urdf.xacro",
                 ]
             ),
+            " controller_config_file:=",
+            controller_config_path,
             " mecanum:=",
             mecanum,
             " lidar_model:=",
@@ -219,20 +222,12 @@ def generate_launch_description():
     )
     robot_description = {"robot_description": robot_description_content}
 
-    robot_controllers = PathJoinSubstitution(
-        [
-            FindPackageShare("rosbot_xl_controller"),
-            "config",
-            controller_config_name,
-        ]
-    )
-
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
             robot_description,
-            robot_controllers,
+            controller_config_path,
         ],
         remappings=[
             ("imu_sensor_node/imu", "/_imu/data_raw"),

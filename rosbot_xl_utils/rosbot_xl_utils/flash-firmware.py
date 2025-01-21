@@ -14,10 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sh
-import time
-import sys
 import argparse
+import sys
+import time
+
+import sh
 from pyftdi.ftdi import Ftdi
 
 # CBUS0 - BOOT0
@@ -60,6 +61,7 @@ class FirmwareFlasher:
     def flash_firmware(self):
         self.enter_bootloader_mode()
         sh.usbreset("0403:6015")
+        time.sleep(2.0)
         # workaround: using pyftdi causes laggy serial port.
         # This line is like unplug/plug for USB port
         sh.stm32flash(self.port, "-v", w=self.binary_file, b="115200", _out=sys.stdout)

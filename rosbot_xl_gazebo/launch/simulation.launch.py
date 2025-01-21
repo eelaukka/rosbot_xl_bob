@@ -14,24 +14,21 @@
 
 from launch import LaunchDescription
 from launch.actions import (
-    IncludeLaunchDescription,
     DeclareLaunchArgument,
-    OpaqueFunction,
-    LogInfo,
     GroupAction,
-)
-from launch.substitutions import (
-    EnvironmentVariable,
-    PathJoinSubstitution,
-    LaunchConfiguration,
-    TextSubstitution,
+    IncludeLaunchDescription,
+    LogInfo,
+    OpaqueFunction,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-
+from launch.substitutions import (
+    EnvironmentVariable,
+    LaunchConfiguration,
+    PathJoinSubstitution,
+    TextSubstitution,
+)
 from launch_ros.actions import SetParameter
-
-from ament_index_python.packages import get_package_share_directory
-
+from launch_ros.substitutions import FindPackageShare
 from nav2_common.launch import ParseMultiRobotPose
 
 
@@ -55,7 +52,7 @@ def launch_setup(context, *args, **kwargs):
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
                 [
-                    get_package_share_directory("ros_gz_sim"),
+                    FindPackageShare("ros_gz_sim"),
                     "launch",
                     "gz_sim.launch.py",
                 ]
@@ -84,11 +81,16 @@ def launch_setup(context, *args, **kwargs):
     spawn_group = []
     for robot_name in robots_list:
         init_pose = robots_list[robot_name]
+
+        spawn_log = LogInfo(
+            msg=[f"Launching namespace={robot_name} with init_pose= {str(init_pose)}"]
+        )
+
         spawn_robot = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 PathJoinSubstitution(
                     [
-                        get_package_share_directory("rosbot_xl_gazebo"),
+                        FindPackageShare("rosbot_xl_gazebo"),
                         "launch",
                         "spawn.launch.py",
                     ]
@@ -109,18 +111,12 @@ def launch_setup(context, *args, **kwargs):
                 "yaw": TextSubstitution(text=str(init_pose["yaw"])),
             }.items(),
         )
+
         group = GroupAction(
-            [
-                LogInfo(
-                    msg=[
-                        "Launching namespace=",
-                        robot_name,
-                        " init_pose=",
-                        str(init_pose),
-                    ]
-                ),
+            actions=[
+                spawn_log,
                 spawn_robot,
-            ]
+            ],
         )
         spawn_group.append(group)
 
@@ -137,9 +133,7 @@ def generate_launch_description():
     declare_mecanum_arg = DeclareLaunchArgument(
         "mecanum",
         default_value="False",
-        description=(
-            "Whether to use mecanum drive controller (otherwise diff drive controller is used)"
-        ),
+        description="Whether to use mecanum drive controller, otherwise use diff drive",
     )
 
     declare_camera_model_arg = DeclareLaunchArgument(
@@ -180,10 +174,10 @@ def generate_launch_description():
         description="Whether to include camera mount to the robot URDF",
     )
 
-    world_package = get_package_share_directory("husarion_office_gz")
+    world_package = FindPackageShare("husarion_gz_worlds")
     world_file = PathJoinSubstitution([world_package, "worlds", "husarion_world.sdf"])
     declare_world_arg = DeclareLaunchArgument(
-        "world", default_value=world_file, description="SDF world file"
+        "world", default_value=world_file, description="Path to SDF world file"
     )
 
     declare_headless_arg = DeclareLaunchArgument(
@@ -196,8 +190,8 @@ def generate_launch_description():
         "robots",
         default_value=[],
         description=(
-            "The list of the robots spawned in the simulation e. g. robots:='robot1={x: 0.0, y:"
-            " -1.0}; robot2={x: 1.0, y: -1.0}; robot3={x: 2.0, y: -1.0}; robot4={x: 3.0, y: -1.0}'"
+            "List of robots that will be spawn in the simulation e. g. robots:='robot1={x: 0.0, y:"
+            " -1.0}; robot2={x: 1.0, y: -1.0}; robot3={x: 2.0, y: -1.0}'"
         ),
     )
 

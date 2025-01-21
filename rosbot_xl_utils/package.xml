@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>rosbot_xl_utils</name>
-  <version>0.10.0</version>
+  <version>0.11.5</version>
   <description>Utilities for ROSbot XL</description>
 
   <maintainer email="support@husarion.com">Husarion</maintainer>
@@ -14,6 +14,8 @@
   <url type="bugtracker">https://github.com/husarion/rosbot_xl_ros/issues</url>
 
   <author email="jakub.delicat@husarion.com">Jakub Delicat</author>
+
+  <exec_depend>launch_ros</exec_depend>
 
   <exec_depend>python3-sh</exec_depend>
   <exec_depend>python-periphery-pip</exec_depend>

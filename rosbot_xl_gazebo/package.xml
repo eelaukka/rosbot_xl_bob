@@ -3,7 +3,7 @@
 <!-- Used https://github.com/colcon/colcon-bundle/blob/master/integration/test_workspace/src/test-nodes/package.xml -->
 <package format="3">
   <name>rosbot_xl_gazebo</name>
-  <version>0.10.0</version>
+  <version>0.11.5</version>
 
   <description>Gazebo Ignition simulation for ROSbot XL</description>
 
@@ -25,7 +25,7 @@
   <exec_depend>ament_index_python</exec_depend>
 
   <exec_depend>rosbot_xl_bringup</exec_depend>
-  <exec_depend>husarion_office_gz</exec_depend>
+  <exec_depend>husarion_gz_worlds</exec_depend>
 
   <exec_depend>ros_gz_sim</exec_depend>
   <!-- Ignition dependency is specified in the ros_gz_sim package,
